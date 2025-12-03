@@ -26,7 +26,6 @@ export const getInitialMockPages = (): Page[] => {
       icon: "🚀",
       createdAt: lastWeek,
       updatedAt: yesterday,
-      isFavorite: true,
     }),
     createMockPage("2", "Project Ideas", {
       icon: "💡",
@@ -48,7 +47,6 @@ export const getInitialMockPages = (): Page[] => {
       icon: "🎯",
       createdAt: lastWeek,
       updatedAt: yesterday,
-      isFavorite: true,
     }),
     createMockPage("6", "Reading List", {
       icon: "📚",

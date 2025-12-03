@@ -8,6 +8,7 @@ import { Button } from "@/components/tailwind/ui/button";
 import { createPageAtom } from "@/lib/atoms";
 import { getPageTemplates } from "@/lib/mock-data";
 import type { PageTemplate } from "@/lib/types";
+import { IconPicker } from "./icon-picker";
 
 interface CreatePageDialogProps {
   open: boolean;
@@ -16,6 +17,7 @@ interface CreatePageDialogProps {
 
 export function CreatePageDialog({ open, onOpenChange }: CreatePageDialogProps) {
   const [title, setTitle] = useState("");
+  const [icon, setIcon] = useState<string>("");
   const [selectedTemplate, setSelectedTemplate] = useState<PageTemplate | null>(null);
   const createPage = useSetAtom(createPageAtom);
   const templates = getPageTemplates();
@@ -25,9 +27,11 @@ export function CreatePageDialog({ open, onOpenChange }: CreatePageDialogProps) 
       createPage({
         id: crypto.randomUUID(),
         title: title.trim(),
+        icon: icon || undefined,
         content: selectedTemplate?.content || { type: "doc", content: [] },
       });
       setTitle("");
+      setIcon("");
       setSelectedTemplate(null);
       onOpenChange(false);
     }
@@ -40,16 +44,20 @@ export function CreatePageDialog({ open, onOpenChange }: CreatePageDialogProps) 
           <DialogTitle>Create New Page</DialogTitle>
         </DialogHeader>
         <div className="space-y-4">
-          <Input
-            placeholder="Page title"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                handleCreate();
-              }
-            }}
-          />
+          <div>
+            <label className="text-sm font-medium mb-2 block">Page Title</label>
+            <Input
+              placeholder="Page title"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  handleCreate();
+                }
+              }}
+            />
+          </div>
+          <IconPicker value={icon} onChange={setIcon} />
           <div>
             <p className="text-sm font-medium mb-2">Templates</p>
             <div className="grid grid-cols-2 gap-2">

@@ -8,7 +8,6 @@ export interface Page {
   content: JSONContent;
   createdAt: Date;
   updatedAt: Date;
-  isFavorite?: boolean;
   tags?: string[];
   archived?: boolean;
 }
@@ -20,7 +19,6 @@ export interface PageMetadata {
   cover?: string;
   createdAt: Date;
   updatedAt: Date;
-  isFavorite?: boolean;
   tags?: string[];
 }
 

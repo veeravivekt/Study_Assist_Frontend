@@ -1,10 +1,12 @@
 "use client";
 
-import { useAtomValue } from "jotai";
+import { useState, useEffect } from "react";
+import { useAtomValue, useSetAtom } from "jotai";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/tailwind/ui/sheet";
-import { currentPageAtom } from "@/lib/atoms";
+import { currentPageAtom, updatePageAtom } from "@/lib/atoms";
 import { Input } from "@/components/tailwind/ui/input";
 import { Label } from "@/components/tailwind/ui/label";
+import { IconPicker } from "./icon-picker";
 
 interface PagePropertiesProps {
   open: boolean;
@@ -13,6 +15,21 @@ interface PagePropertiesProps {
 
 export function PageProperties({ open, onOpenChange }: PagePropertiesProps) {
   const currentPage = useAtomValue(currentPageAtom);
+  const updatePage = useSetAtom(updatePageAtom);
+  const [icon, setIcon] = useState<string>("");
+
+  useEffect(() => {
+    if (currentPage) {
+      setIcon(currentPage.icon || "");
+    }
+  }, [currentPage]);
+
+  const handleIconChange = (newIcon: string) => {
+    if (currentPage) {
+      setIcon(newIcon);
+      updatePage(currentPage.id, { icon: newIcon || undefined });
+    }
+  };
 
   if (!currentPage) return null;
 
@@ -23,6 +40,7 @@ export function PageProperties({ open, onOpenChange }: PagePropertiesProps) {
           <SheetTitle>Page Properties</SheetTitle>
         </SheetHeader>
         <div className="space-y-4 mt-4">
+          <IconPicker value={icon} onChange={handleIconChange} />
           <div>
             <Label>Title</Label>
             <Input value={currentPage.title} readOnly />

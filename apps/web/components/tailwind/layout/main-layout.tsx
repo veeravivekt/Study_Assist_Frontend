@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { Sidebar } from "./sidebar";
-import { Topbar } from "./topbar";
 import { RightSidebar } from "./right-sidebar";
 import TailwindAdvancedEditor from "../advanced-editor";
 import { CreatePageDialog } from "../pages/create-page-dialog";
@@ -23,11 +22,9 @@ export function MainLayout() {
         <Sidebar 
           onCreatePage={() => setCreatePageOpen(true)}
           onSettingsClick={() => setSettingsOpen(true)}
+          onPropertiesClick={() => setPropertiesOpen(true)}
         />
         <div className="flex-1 flex flex-col min-w-0 relative">
-          <Topbar
-            onPropertiesClick={() => setPropertiesOpen(true)}
-          />
           <div className="flex-1 overflow-auto">
             <TailwindAdvancedEditor />
           </div>

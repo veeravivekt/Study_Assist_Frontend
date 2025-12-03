@@ -1,6 +1,6 @@
 "use client";
 
-import { Search, Plus, Star, Menu, Settings, LogOut } from "lucide-react";
+import { Search, Plus, Menu, Settings, LogOut } from "lucide-react";
 import { useAtomValue, useSetAtom } from "jotai";
 import { useState, useMemo, useEffect } from "react";
 import { Input } from "@/components/tailwind/ui/input";
@@ -11,7 +11,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/tailwind/ui/av
 import { PageTree } from "./page-tree";
 import {
   pagesAtom,
-  favoritesAtom,
   sidebarOpenAtom,
   setSidebarOpenAtom,
 } from "@/lib/atoms";
@@ -21,13 +20,13 @@ import { storage } from "@/lib/storage";
 interface SidebarProps {
   onCreatePage?: () => void;
   onSettingsClick?: () => void;
+  onPropertiesClick?: () => void;
 }
 
-export function Sidebar({ onCreatePage, onSettingsClick }: SidebarProps) {
+export function Sidebar({ onCreatePage, onSettingsClick, onPropertiesClick }: SidebarProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [isMounted, setIsMounted] = useState(false);
   const pages = useAtomValue(pagesAtom);
-  const favorites = useAtomValue(favoritesAtom);
   const sidebarOpen = useAtomValue(sidebarOpenAtom);
   const setSidebarOpen = useSetAtom(setSidebarOpenAtom);
 
@@ -46,11 +45,6 @@ export function Sidebar({ onCreatePage, onSettingsClick }: SidebarProps) {
         page.tags?.some((tag) => tag.toLowerCase().includes(query))
     );
   }, [pages, searchQuery]);
-
-  // Get favorite pages
-  const favoritePages = useMemo(() => {
-    return pages.filter((page) => favorites.includes(page.id));
-  }, [pages, favorites]);
 
   if (!sidebarOpen) {
     return (
@@ -106,32 +100,6 @@ export function Sidebar({ onCreatePage, onSettingsClick }: SidebarProps) {
 
       <ScrollArea className="flex-1">
         <div className="p-2 space-y-4">
-          {/* Favorites */}
-          {isMounted && favoritePages.length > 0 && !searchQuery && (
-            <>
-              <div className="px-2 py-1 text-xs font-semibold text-muted-foreground flex items-center gap-2">
-                <Star className="h-3 w-3" />
-                Favorites
-              </div>
-              <div className="space-y-1">
-                {favoritePages.map((page) => (
-                  <div
-                    key={page.id}
-                    className="px-2 py-1 text-sm rounded-md hover:bg-accent cursor-pointer flex items-center gap-2"
-                    onClick={() => {
-                      storage.setCurrentPageId(page.id);
-                      window.location.reload();
-                    }}
-                  >
-                    {page.icon && <span>{page.icon}</span>}
-                    <span className="truncate">{page.title}</span>
-                  </div>
-                ))}
-              </div>
-              <Separator />
-            </>
-          )}
-
           {/* Page Tree */}
           {searchQuery ? (
             <div className="space-y-1">
@@ -150,7 +118,7 @@ export function Sidebar({ onCreatePage, onSettingsClick }: SidebarProps) {
               ))}
             </div>
           ) : (
-            <PageTree />
+            <PageTree onPropertiesClick={onPropertiesClick} />
           )}
         </div>
       </ScrollArea>

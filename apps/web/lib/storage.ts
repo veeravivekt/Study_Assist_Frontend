@@ -3,7 +3,6 @@ import type { Page } from "./types";
 const STORAGE_KEYS = {
   PAGES: "novel__pages",
   CURRENT_PAGE_ID: "novel__current_page_id",
-  FAVORITES: "novel__favorites",
   SIDEBAR_OPEN: "novel__sidebar_open",
 } as const;
 
@@ -95,33 +94,6 @@ export const storage = {
     } else {
       window.localStorage.removeItem(STORAGE_KEYS.CURRENT_PAGE_ID);
     }
-  },
-
-  // Get favorites
-  getFavorites(): string[] {
-    if (typeof window === "undefined") return [];
-    const stored = window.localStorage.getItem(STORAGE_KEYS.FAVORITES);
-    if (!stored) return [];
-    try {
-      return JSON.parse(stored);
-    } catch {
-      return [];
-    }
-  },
-
-  // Toggle favorite
-  toggleFavorite(pageId: string): boolean {
-    const favorites = this.getFavorites();
-    const index = favorites.indexOf(pageId);
-    const isFavorite = index === -1;
-    if (isFavorite) {
-      favorites.push(pageId);
-    } else {
-      favorites.splice(index, 1);
-    }
-    if (typeof window === "undefined") return isFavorite;
-    window.localStorage.setItem(STORAGE_KEYS.FAVORITES, JSON.stringify(favorites));
-    return isFavorite;
   },
 
   // Get sidebar open state

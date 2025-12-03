@@ -26,9 +26,6 @@ export const currentPageIdAtom = atom<string | null>(
 // Sidebar open state atom
 export const sidebarOpenAtom = atom<boolean>(storage.getSidebarOpen());
 
-// Favorites atom
-export const favoritesAtom = atom<string[]>(storage.getFavorites());
-
 // Derived atoms
 export const currentPageAtom = atom((get) => {
   const pages = get(pagesAtom);
@@ -75,13 +72,6 @@ export const setCurrentPageId = (id: string | null) => {
   storage.setCurrentPageId(id);
   // This will be used with useSetAtom
 };
-
-export const toggleFavoriteAtom = atom(null, (get, set, pageId: string) => {
-  const isFavorite = storage.toggleFavorite(pageId);
-  set(favoritesAtom, storage.getFavorites());
-  set(updatePageAtom, pageId, { isFavorite });
-  return isFavorite;
-});
 
 export const setSidebarOpenAtom = atom(null, (get, set, open: boolean) => {
   storage.setSidebarOpen(open);
