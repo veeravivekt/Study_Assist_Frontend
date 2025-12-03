@@ -1,0 +1,13 @@
+{
+  "name": "novel",
+  "private": true,
+  "scripts": {
+    "build": "turbo build",
+    "dev": "turbo dev",
+    "clean": "turbo clean"
+  },
+  "dependencies": {
+    "turbo": "^2.3.3"
+  },
+  "packageManager": "pnpm@9.5.0"
+}
