@@ -100,9 +100,21 @@ const TailwindAdvancedEditor = () => {
       });
 
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ error: response.statusText }));
-        console.error("Save error response:", errorData);
-        throw new Error(`Failed to save: ${errorData.error || response.statusText}`);
+        let errorMessage = response.statusText;
+        try {
+          const errorData = await response.json();
+          if (errorData && typeof errorData === 'object' && errorData.error) {
+            errorMessage = errorData.error;
+          } else if (errorData && typeof errorData === 'object') {
+            // If errorData is an object but has no error property, stringify it for debugging
+            errorMessage = JSON.stringify(errorData) || response.statusText;
+          }
+        } catch {
+          // If response is not valid JSON, use statusText
+          errorMessage = response.statusText || `HTTP ${response.status}`;
+        }
+        console.error("Save error response:", { status: response.status, message: errorMessage });
+        throw new Error(`Failed to save: ${errorMessage}`);
       }
 
       const result = await response.json();

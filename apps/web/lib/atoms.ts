@@ -1,5 +1,5 @@
 import { atom } from "jotai";
-import type { Page, RecentPage } from "./types";
+import type { Page } from "./types";
 import { storage } from "./storage";
 import { getInitialMockPages } from "./mock-data";
 
@@ -26,9 +26,6 @@ export const currentPageIdAtom = atom<string | null>(
 // Sidebar open state atom
 export const sidebarOpenAtom = atom<boolean>(storage.getSidebarOpen());
 
-// Recent pages atom
-export const recentPagesAtom = atom<RecentPage[]>(storage.getRecentPages());
-
 // Favorites atom
 export const favoritesAtom = atom<string[]>(storage.getFavorites());
 
@@ -40,32 +37,13 @@ export const currentPageAtom = atom((get) => {
   return pages.find((p) => p.id === currentId) || null;
 });
 
-// Root pages (pages without parent)
-export const rootPagesAtom = atom((get) => {
-  const pages = get(pagesAtom);
-  return pages.filter((p) => !p.parentId);
-});
-
-// Pages by parent ID
-export const pagesByParentAtom = atom((get) => {
-  const pages = get(pagesAtom);
-  const map = new Map<string, Page[]>();
-  pages.forEach((page) => {
-    const parentId = page.parentId || "root";
-    if (!map.has(parentId)) {
-      map.set(parentId, []);
-    }
-    map.get(parentId)!.push(page);
-  });
-  return map;
-});
-
 // Write-only atoms for actions
 export const createPageAtom = atom(null, (get, set, page: Omit<Page, "createdAt" | "updatedAt">) => {
   const newPage = storage.createPage(page);
   set(pagesAtom, storage.getPages());
-  // Update current page ID through storage
+  // Update current page ID in both storage and atom state to keep them in sync
   storage.setCurrentPageId(newPage.id);
+  set(currentPageIdAtom, newPage.id);
   return newPage;
 });
 
@@ -86,6 +64,7 @@ export const deletePageAtom = atom(null, (get, set, id: string) => {
       const pages = storage.getPages();
       const newCurrentId = pages[0]?.id || null;
       storage.setCurrentPageId(newCurrentId);
+      set(currentPageIdAtom, newCurrentId);
     }
   }
   return deleted;

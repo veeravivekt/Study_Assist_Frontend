@@ -1,9 +1,8 @@
-import type { Page, RecentPage } from "./types";
+import type { Page } from "./types";
 
 const STORAGE_KEYS = {
   PAGES: "novel__pages",
   CURRENT_PAGE_ID: "novel__current_page_id",
-  RECENT_PAGES: "novel__recent_pages",
   FAVORITES: "novel__favorites",
   SIDEBAR_OPEN: "novel__sidebar_open",
 } as const;
@@ -93,37 +92,9 @@ export const storage = {
     if (typeof window === "undefined") return;
     if (id) {
       window.localStorage.setItem(STORAGE_KEYS.CURRENT_PAGE_ID, id);
-      // Add to recent pages
-      this.addToRecentPages(id);
     } else {
       window.localStorage.removeItem(STORAGE_KEYS.CURRENT_PAGE_ID);
     }
-  },
-
-  // Get recent pages
-  getRecentPages(): RecentPage[] {
-    if (typeof window === "undefined") return [];
-    const stored = window.localStorage.getItem(STORAGE_KEYS.RECENT_PAGES);
-    if (!stored) return [];
-    try {
-      const recent = JSON.parse(stored);
-      return recent.map((r: RecentPage) => ({
-        ...r,
-        accessedAt: new Date(r.accessedAt),
-      }));
-    } catch {
-      return [];
-    }
-  },
-
-  // Add page to recent pages
-  addToRecentPages(pageId: string, maxRecent = 10): void {
-    const recent = this.getRecentPages();
-    const filtered = recent.filter((r) => r.pageId !== pageId);
-    filtered.unshift({ pageId, accessedAt: new Date() });
-    const trimmed = filtered.slice(0, maxRecent);
-    if (typeof window === "undefined") return;
-    window.localStorage.setItem(STORAGE_KEYS.RECENT_PAGES, JSON.stringify(trimmed));
   },
 
   // Get favorites

@@ -15,7 +15,7 @@ export const createMockPage = (
   ...options,
 });
 
-// Build initial mock pages with hierarchy
+// Build initial mock pages
 export const getInitialMockPages = (): Page[] => {
   const now = new Date();
   const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000);
@@ -30,7 +30,6 @@ export const getInitialMockPages = (): Page[] => {
     }),
     createMockPage("2", "Project Ideas", {
       icon: "💡",
-      parentId: "1",
       createdAt: yesterday,
       updatedAt: yesterday,
     }),
@@ -47,14 +46,12 @@ export const getInitialMockPages = (): Page[] => {
     }),
     createMockPage("5", "Goals 2024", {
       icon: "🎯",
-      parentId: "4",
       createdAt: lastWeek,
       updatedAt: yesterday,
       isFavorite: true,
     }),
     createMockPage("6", "Reading List", {
       icon: "📚",
-      parentId: "4",
       createdAt: yesterday,
       updatedAt: now,
     }),
@@ -65,61 +62,11 @@ export const getInitialMockPages = (): Page[] => {
     }),
     createMockPage("8", "Team Projects", {
       icon: "👥",
-      parentId: "7",
       createdAt: yesterday,
       updatedAt: now,
       tags: ["work", "team"],
     }),
   ];
-};
-
-// Convert flat page array to tree structure
-export const buildPageTree = (pages: Page[]): Page[] => {
-  const pageMap = new Map<string, Page & { children?: Page[] }>();
-  const rootPages: Page[] = [];
-
-  // First pass: create map of all pages
-  pages.forEach((page) => {
-    pageMap.set(page.id, { ...page });
-  });
-
-  // Second pass: build tree
-  pages.forEach((page) => {
-    const pageWithChildren = pageMap.get(page.id)!;
-    if (page.parentId) {
-      const parent = pageMap.get(page.parentId);
-      if (parent) {
-        if (!parent.children) {
-          parent.children = [];
-        }
-        parent.children.push(pageWithChildren);
-      }
-    } else {
-      rootPages.push(pageWithChildren);
-    }
-  });
-
-  return rootPages;
-};
-
-// Get children of a page
-export const getPageChildren = (pages: Page[], parentId: string): Page[] => {
-  return pages.filter((page) => page.parentId === parentId);
-};
-
-// Get page path (breadcrumbs)
-export const getPagePath = (pages: Page[], pageId: string): Page[] => {
-  const path: Page[] = [];
-  let currentId: string | undefined = pageId;
-
-  while (currentId) {
-    const page = pages.find((p) => p.id === currentId);
-    if (!page) break;
-    path.unshift(page);
-    currentId = page.parentId;
-  }
-
-  return path;
 };
 
 // Templates

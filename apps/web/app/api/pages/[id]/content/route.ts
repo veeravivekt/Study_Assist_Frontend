@@ -13,10 +13,12 @@ interface SaveContentRequest {
 
 export async function POST(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> | { id: string } }
 ): Promise<Response> {
   try {
-    const pageId = params?.id;
+    // In Next.js 16, params can be a Promise that needs to be awaited
+    const resolvedParams = await Promise.resolve(params);
+    const pageId = resolvedParams?.id;
     
     if (!pageId) {
       return NextResponse.json(
@@ -104,10 +106,12 @@ export async function POST(
 // GET endpoint to retrieve page content
 export async function GET(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> | { id: string } }
 ): Promise<Response> {
   try {
-    const pageId = params?.id;
+    // In Next.js 16, params can be a Promise that needs to be awaited
+    const resolvedParams = await Promise.resolve(params);
+    const pageId = resolvedParams?.id;
     
     if (!pageId) {
       return NextResponse.json(

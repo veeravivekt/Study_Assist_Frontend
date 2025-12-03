@@ -1,6 +1,6 @@
 "use client";
 
-import { Search, Plus, Star, Clock, Menu, Settings, LogOut } from "lucide-react";
+import { Search, Plus, Star, Menu, Settings, LogOut } from "lucide-react";
 import { useAtomValue, useSetAtom } from "jotai";
 import { useState, useMemo, useEffect } from "react";
 import { Input } from "@/components/tailwind/ui/input";
@@ -11,7 +11,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/tailwind/ui/av
 import { PageTree } from "./page-tree";
 import {
   pagesAtom,
-  recentPagesAtom,
   favoritesAtom,
   sidebarOpenAtom,
   setSidebarOpenAtom,
@@ -28,7 +27,6 @@ export function Sidebar({ onCreatePage, onSettingsClick }: SidebarProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [isMounted, setIsMounted] = useState(false);
   const pages = useAtomValue(pagesAtom);
-  const recentPages = useAtomValue(recentPagesAtom);
   const favorites = useAtomValue(favoritesAtom);
   const sidebarOpen = useAtomValue(sidebarOpenAtom);
   const setSidebarOpen = useSetAtom(setSidebarOpenAtom);
@@ -53,14 +51,6 @@ export function Sidebar({ onCreatePage, onSettingsClick }: SidebarProps) {
   const favoritePages = useMemo(() => {
     return pages.filter((page) => favorites.includes(page.id));
   }, [pages, favorites]);
-
-  // Get recent pages
-  const recentPagesList = useMemo(() => {
-    return recentPages
-      .map((rp) => pages.find((p) => p.id === rp.pageId))
-      .filter((p): p is Page => p !== undefined)
-      .slice(0, 5);
-  }, [recentPages, pages]);
 
   if (!sidebarOpen) {
     return (
@@ -116,32 +106,6 @@ export function Sidebar({ onCreatePage, onSettingsClick }: SidebarProps) {
 
       <ScrollArea className="flex-1">
         <div className="p-2 space-y-4">
-          {/* Recent Pages */}
-          {isMounted && recentPagesList.length > 0 && !searchQuery && (
-            <>
-              <div className="px-2 py-1 text-xs font-semibold text-muted-foreground flex items-center gap-2">
-                <Clock className="h-3 w-3" />
-                Recent
-              </div>
-              <div className="space-y-1">
-                {recentPagesList.map((page) => (
-                  <div
-                    key={page.id}
-                    className="px-2 py-1 text-sm rounded-md hover:bg-accent cursor-pointer flex items-center gap-2"
-                    onClick={() => {
-                      storage.setCurrentPageId(page.id);
-                      window.location.reload(); // Simple way to update - will be improved
-                    }}
-                  >
-                    {page.icon && <span>{page.icon}</span>}
-                    <span className="truncate">{page.title}</span>
-                  </div>
-                ))}
-              </div>
-              <Separator />
-            </>
-          )}
-
           {/* Favorites */}
           {isMounted && favoritePages.length > 0 && !searchQuery && (
             <>
@@ -191,9 +155,21 @@ export function Sidebar({ onCreatePage, onSettingsClick }: SidebarProps) {
         </div>
       </ScrollArea>
 
-      {/* Footer with User Info and Settings */}
-      <div className="border-t p-3 space-y-2">
-        <div className="flex items-center gap-3 px-2 py-2">
+      {/* Footer with Settings */}
+      <div className="border-t p-2">
+        <Button
+          variant="ghost"
+          className="w-full justify-start gap-2"
+          onClick={() => onSettingsClick?.()}
+        >
+          <Settings className="h-4 w-4" />
+          Settings
+        </Button>
+      </div>
+
+      {/* Footer with User Info and Sign Out */}
+      <div className="border-t p-3">
+        <div className="flex items-center gap-3 px-2 py-2 mb-2">
           <Avatar className="h-8 w-8">
             <AvatarImage src="" alt="User" />
             <AvatarFallback className="bg-primary text-primary-foreground text-xs">
@@ -205,16 +181,7 @@ export function Sidebar({ onCreatePage, onSettingsClick }: SidebarProps) {
             <p className="text-xs text-muted-foreground truncate">user@example.com</p>
           </div>
         </div>
-        <Separator />
-        <div className="space-y-1">
-          <Button
-            variant="ghost"
-            className="w-full justify-start gap-2"
-            onClick={() => onSettingsClick?.()}
-          >
-            <Settings className="h-4 w-4" />
-            Settings
-          </Button>
+        <div className="p-2 pt-0">
           <Button
             variant="ghost"
             className="w-full justify-start gap-2 text-destructive hover:text-destructive"

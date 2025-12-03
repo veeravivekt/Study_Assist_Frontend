@@ -5,7 +5,6 @@ export interface Page {
   title: string;
   icon?: string;
   cover?: string;
-  parentId?: string;
   content: JSONContent;
   createdAt: Date;
   updatedAt: Date;
@@ -14,25 +13,15 @@ export interface Page {
   archived?: boolean;
 }
 
-export interface PageTree extends Page {
-  children?: PageTree[];
-}
-
 export interface PageMetadata {
   id: string;
   title: string;
   icon?: string;
   cover?: string;
-  parentId?: string;
   createdAt: Date;
   updatedAt: Date;
   isFavorite?: boolean;
   tags?: string[];
-}
-
-export interface RecentPage {
-  pageId: string;
-  accessedAt: Date;
 }
 
 export interface PageTemplate {

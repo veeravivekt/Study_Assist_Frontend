@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronRight, MoreHorizontal, Star } from "lucide-react";
+import { MoreHorizontal, Star } from "lucide-react";
 import { useAtomValue, useSetAtom } from "jotai";
 import { useState } from "react";
 import type { Page } from "@/lib/types";
@@ -24,18 +24,10 @@ import { cn } from "@/lib/utils";
 
 interface PageItemProps {
   page: Page;
-  level?: number;
-  hasChildren?: boolean;
-  isExpanded?: boolean;
-  onToggleExpand?: () => void;
 }
 
 export function PageItem({
   page,
-  level = 0,
-  hasChildren = false,
-  isExpanded = false,
-  onToggleExpand,
 }: PageItemProps) {
   const [isHovered, setIsHovered] = useState(false);
   const currentPageId = useAtomValue(currentPageIdAtom);
@@ -68,29 +60,11 @@ export function PageItem({
       className={cn(
         "group flex items-center gap-1 px-2 py-1 rounded-md text-sm cursor-pointer",
         "hover:bg-accent transition-colors",
-        isActive && "bg-accent font-medium",
-        level > 0 && "ml-4"
+        isActive && "bg-accent font-medium"
       )}
-      style={{ paddingLeft: `${level * 16 + 8}px` }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      {hasChildren && (
-        <Button
-          variant="ghost"
-          size="sm"
-          className="h-4 w-4 p-0"
-          onClick={(e) => {
-            e.stopPropagation();
-            onToggleExpand?.();
-          }}
-        >
-          <ChevronRight
-            className={cn("h-3 w-3 transition-transform", isExpanded && "rotate-90")}
-          />
-        </Button>
-      )}
-      {!hasChildren && <div className="w-4" />}
 
       <button
         onClick={handleClick}
